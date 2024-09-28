@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Assignment, Submission, Attachment, Subtask, SubtaskInfo
+from .models import Assignment, Submission, Attachment, Subtask, SubtaskInfo , GroupInfo
 
 class AssignmentSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -25,3 +25,8 @@ class SubtaskInfoSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = SubtaskInfo
 		fields = '__all__' 
+
+class GroupInfoSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = GroupInfo
+		fields = '__all__'
