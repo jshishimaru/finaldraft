@@ -45,7 +45,7 @@ class Submission( models.Model):
 class Attachment(models.Model):
 	ATTACHMENT_TYPES = [
 		('URL', 'URL'),
-		('PDF', 'PDF'),
+		('PDF', 'PDF'),	
 		('IMAGE', 'Image'),
 	]
 
