@@ -7,10 +7,31 @@ class UserSerializer(serializers.ModelSerializer):
 		model = User
 		fields = '__all__'
 
+class UserDetailSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User
+		fields = [
+			'username',
+			'first_name',
+			'last_name',
+		]
+
 class AssignmentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Assignment
 		fields = '__all__'
+
+class AssignmentInfoSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Assignment
+		fields = [
+			'title',
+			'date',
+			'deadline',
+			'description',
+			'creator',	
+		]
+
 
 class SubmissionSerializer(serializers.ModelSerializer):
 	class Meta:

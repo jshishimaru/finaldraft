@@ -27,8 +27,8 @@ class Subtask( models.Model):
 class Submission( models.Model):
 	remark = models.CharField(max_length=200)
 	date = models.DateField( default=datetime.date.today)	
-	reviewee = models.ManyToManyField(User , related_name='reviewee_submissions')
-	reviewer = models.ManyToManyField(User , related_name='reviewer_submissions')
+	reviewee = models.ManyToManyField(User , related_name='reviewee_submissions' , blank=True)
+	reviewer = models.ManyToManyField(User , related_name='reviewer_submissions' , blank=True)
 	approved_by = models.ForeignKey(User, on_delete=models.CASCADE , related_name='approved_submissions')
 	is_completed = models.BooleanField()
 	iteration_no = models.IntegerField( )
@@ -56,7 +56,7 @@ class SubtaskInfo(models.Model):
 
 class GroupInfo(models.Model):
 	name = models.CharField(max_length=50)
-	member = models.ManyToManyField(User, related_name='groupinfo')
+	member = models.ManyToManyField(User, related_name='groupinfo' , blank=True)
 
 	def __str__(self):
 		return self.name

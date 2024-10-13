@@ -9,10 +9,12 @@ from django.contrib.auth.models import User , Group
 from .models import Assignment, Submission, Attachment, Subtask, SubtaskInfo, GroupInfo
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-from .serializers import AssignmentSerializer, SubmissionSerializer, AttachmentSerializer, SubtaskSerializer, SubtaskInfoSerializer , GroupInfoSerializer
-# Create your views here.
+from .serializers import AssignmentSerializer, SubmissionSerializer, AttachmentSerializer, SubtaskSerializer, SubtaskInfoSerializer , GroupInfoSerializer , UserDetailSerializer
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
-class AssignmentViewSet( View ):
+@method_decorator(csrf_exempt, name='dispatch')
+class AssignmentListViewSet(View):
 
 	def get( self , request ):
 		user = request.user
@@ -50,7 +52,6 @@ class AssignmentViewSet( View ):
 			user = get_object_or_404(User, pk=user_id)
 			reviewer_list.append(user)
 
-
 		assignment_data = {
 			'title': data.get('title'),
 			'date': data.get('date'),
@@ -68,6 +69,44 @@ class AssignmentViewSet( View ):
 			return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 		return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class GroupListViewSet( View):
+	def get(self, request):
+		group_list = []
+		group_ids = list(GroupInfo.objects.values_list('id', flat=True))
+		for group_id in group_ids:
+			group = get_object_or_404(GroupInfo, pk=group_id)
+			if( request.user in group.member.all() ):
+				group_list.append(group)
+		
+		serializer = GroupInfoSerializer( group_list , many=True )
+		return JsonResponse(serializer.data, safe=False)
+	
+	def post(self, request):
+		data = JSONParser().parse(request)
+		group_data = {
+			'name': data.get('name'),
+		}
+		user_ids = data.get('members', [])
+		user_list = []
+		for user_id in user_ids:
+			user = get_object_or_404(User, pk=user_id)
+			user_list.append(user)
+		serializer = GroupInfoSerializer(data=group_data)
+		if serializer.is_valid():
+			group = serializer.save()
+			group.member.add(*user_list)
+			return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+		return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class GroupMemberListViewSet( View):
+	def get( self , request ):
+		group= get_object_or_404(GroupInfo, pk=request.GET.get('group_id'))
+		member_list = group.member.all()
+		serializer = UserDetailSerializer( member_list , many=True )
+		return JsonResponse(serializer.data, safe=False)
 
 class SubmissionViewSet( generics.ListCreateAPIView):
 	queryset = Submission.objects.all()

@@ -3,5 +3,5 @@ from . import views
 
 
 urlpatterns = [
-	path('users/assignments/', views.AssignmentViewSet.as_view() , name='assignment'),
+	path('users/assignments/', views.AssignmentListViewSet.as_view() , name='assignment'),
 ]

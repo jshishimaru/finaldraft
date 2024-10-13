@@ -12,5 +12,5 @@ date = timezone.now().date()
 deadline = (timezone.now() + timezone.timedelta(days=7)).date()
 description = "This is an example assignment."
 creator = User.objects.get(username='jshishimaru')
-from finaldraft.serializers import AssignmentSerializer
+from finaldraft.serializers import AssignmentSerializer , UserDetailSerializer
 serializer = AssignmentSerializer(data=assignment_data)
