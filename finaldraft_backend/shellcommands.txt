@@ -1,0 +1,16 @@
+from finaldraft.models import User,GroupInfo
+rev_list=[]
+group = GroupInfo.objects.get(pk=2)
+user_list=group.member.all()
+rev_list.extend(user_list)
+group = GroupInfo.objects.get(pk=3)
+user_list=group.member.all()
+rev_list.extend(user_list)
+from django.utils import timezone
+title = "Example Assignment"
+date = timezone.now().date()
+deadline = (timezone.now() + timezone.timedelta(days=7)).date()
+description = "This is an example assignment."
+creator = User.objects.get(username='jshishimaru')
+from finaldraft.serializers import AssignmentSerializer
+serializer = AssignmentSerializer(data=assignment_data)
