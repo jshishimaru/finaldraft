@@ -14,3 +14,10 @@ description = "This is an example assignment."
 creator = User.objects.get(username='jshishimaru')
 from finaldraft.serializers import AssignmentSerializer , UserDetailSerializer
 serializer = AssignmentSerializer(data=assignment_data)
+
+from finaldraft.models import Submission , Assignment , Subtask , SubtaskSubmissionInfo
+from finaldraft.serializers import AssignmentSerializer, SubmissionSerializer, AttachmentSerializer, SubtaskSerializer, SubtaskInfoSerializer , GroupInfoSerializer , UserDetailSerializer , SubmissionCreateSerializer , SubmissionInfoSerializer
+sd = {"date": "2023-10-01","assignment": 1,"remark": "This is a sample remark for the submission."}
+serializer = SubmissionCreateSerializer(data=sd)
+serializer.is_valid()
+submission=serializer.save()

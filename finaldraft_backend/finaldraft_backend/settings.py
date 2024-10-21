@@ -116,3 +116,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CLIENT_ID = 'EpWbLyyGRi7GO68kHpvagrx76cZCTjVWBAbCUSbr' 
 CLIENT_SECRET = 'i5okg9aAOBwWuLp2WvnQJ8DQf5Jnu6OpLTPYYOTMKSxOibMKk5mfbvXUiU81kgNDKf1qItACoyl2nWxxyvc3cONhjLo6CkuCHeBj321BaioLwv7DbWxFk84rJUDwqOxz'
+
+import os
+
+MEDIA_URL = '/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'finaldraft/media')

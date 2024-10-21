@@ -79,7 +79,6 @@ class LoginView(View):
 	def post(self, request):
 		username = request.POST.get('username')
 		password = request.POST.get('password')
-		users = User.objects.all()
 		user = authenticate(username=username, password=password)
 		if user is not None:
 			login(request, user)
@@ -116,4 +115,8 @@ class SignUpView(View):
 		user.save()
 		user_data = User.objects.filter(username=username).values()[0]
 		return JsonResponse(user_data)
-	
+
+class LogoutView(View):
+	def post(self, request):
+		logout(request)
+		return JsonResponse({'message': 'Logged out successfully'})
