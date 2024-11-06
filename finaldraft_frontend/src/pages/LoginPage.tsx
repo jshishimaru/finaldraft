@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../apiservice';
 import Button from '@mui/material/Button';
 import { Container , Box , TextField , Typography, Divider } from '@mui/material';
+import { useState } from 'react';
 
 function LoginForm() {
 
@@ -13,10 +13,9 @@ function LoginForm() {
 		e.preventDefault();
 		console.log('Submitting')
 		try{
-
 			const data = await login(username, password);
 			console.log(data);
-
+			navigate('/homepage/assignments');
 		}
 		catch(error){
 			console.error('Error logging in:', error);
@@ -64,14 +63,14 @@ function LoginForm() {
 					color: "#EEEEEE",
 					fontSize:20, 
 				},
-				borderRadius:'10px',
+				borderRadius:'20px',
 				width:'448px',
 				height:'81px',
 				py:2,
 			}}
 			variant='outlined' 
 			name="username" 
-			label="Username" 
+			label="Username"
 			value={username}
 			onChange={(e)=>setUsername(e.target.value)}
 			/>
@@ -92,7 +91,7 @@ function LoginForm() {
 					color: "#EEEEEE",
 					fontSize:"28px", // Input text
 				},
-				borderRadius:'10px',
+				borderRadius:'20px',
 				width:'448px',
 				height:'81px',
 				py:2,
@@ -120,7 +119,6 @@ function LoginForm() {
 		type="submit">
 		Sign In
 		</Button> 
-
 		<Divider
 			style={{width:"100%"}} 
 			sx={{

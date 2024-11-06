@@ -28,7 +28,7 @@ function InputBox({ label, type, value, onChange }: InputBoxProps){
 					color: "#EEEEEE",
 					fontSize:20, 
 				},
-				borderRadius:'10px',
+				borderRadius:'20px',
 				width:'448px',
 				height:'81px',
 				py:2,
