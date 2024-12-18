@@ -1,10 +1,50 @@
-import { AppBar, Toolbar, Typography, List, ListItem, ListItemText, CssBaseline, Box } from '@mui/material';
-import { Link,  } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Typography, List, ListItem, ListItemText, CssBaseline, Box, IconButton, Menu, MenuItem, Avatar } from '@mui/material';
+import { Link, Outlet , useNavigate } from 'react-router-dom';
+import { getSelfProfile, logout } from '../apiservice';
 
 const drawerWidth = 240;
 
+interface Profile{
+  username: string;
+  first_name: string;
+  last_name: string;
+  is_reviewer: boolean;
+  id: number;
+}
+
 const Dashboard = () => {
+
+  const [userProfile , setUserProfile] = React.useState<Profile | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+	getSelfProfile().then((data) => {
+	  setUserProfile(data);
+	});
+  }, []);
+
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+    const handleLogout = async () => {
+    try {
+      await logout();
+      window.location.href = '/'; // Redirect to login page after logout
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+    const handleUserClick = (userId: number) => {
+    navigate(`/homepage/users/${userId}`);
+   };
 
   const drawer = (
     <div>
@@ -23,9 +63,6 @@ const Dashboard = () => {
         <ListItem  component={Link} to="/homepage/groups">
           <ListItemText primary="Groups" />
         </ListItem>
-		<ListItem  component={Link} to="/homepage/notifications">
-		  <ListItemText primary="Notifications" />
-		</ListItem>
       </List>
     </div>
   );
@@ -43,10 +80,32 @@ const Dashboard = () => {
 			borderBottom: "1px solid #676767",
 			zIndex: (theme) => theme.zIndex.drawer + 1,
 		}}>
-		<Toolbar>
+		<Toolbar sx={{display:"flex" , justifyContent:"space-between"}}>
 		  <Typography variant="h6" noWrap>
 		    FinalDraft
 		  </Typography>
+          <div>
+            <IconButton onClick={handleMenuOpen} color="inherit">
+              <Avatar>{userProfile?.username.charAt(0).toUpperCase()}</Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              PaperProps={{
+                style: {
+                  width: '200px',
+                },
+              }}
+            >
+              <MenuItem onClick={()=>{userProfile && handleUserClick(userProfile.id)}}>
+                <Typography variant="body2">{userProfile?.username}</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <Typography variant="body2">Logout</Typography>
+              </MenuItem>
+            </Menu>
+          </div>
 		</Toolbar>
 		</AppBar>
 

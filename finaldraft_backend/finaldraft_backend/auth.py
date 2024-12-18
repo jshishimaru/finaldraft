@@ -5,8 +5,10 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 import requests
 from django.contrib.auth.models import User,Group
+
 
 redirect_url ='http://localhost:8000/oauth/channeli/callback/'
 authorize_url ='https://channeli.in/oauth/authorise/'
@@ -34,16 +36,13 @@ class OAuthGetToken(View):
 			'client_secret': client_secret,
 			'code': code,
 			'redirect_uri': redirect_url,
-			'grant_type': 'authorization_code'
+			'grant_type': 'authorization_code',
+			'state':state
 		}
-
-		print(data)
 
 		response = requests.post(token_url, data=data)
 		if response.status_code != 200:
 			return JsonResponse({'error': 'Failed to obtain access token'}, status=response.status_code)
-
-		print(response.json())
 
 		token_data = response.json()
 		access_token = token_data.get('access_token')
@@ -52,13 +51,27 @@ class OAuthGetToken(View):
 		user_info = requests.get(get_user_data_url, headers = {'Authorization': f'Bearer {access_token}'})
 		user_data = user_info.json()
 
-		user = authenticate( request , username=user_data['username'])
-		if user is not None:
-			login(request, user)
-			return JsonResponse(user_data)
-		else:
-			return JsonResponse({'message': 'Login Failed'}, status=401)
+		PersonalEmail = user_data["contactInformation"]["emailAddress"]
+		InstituteEmail = user_data["contactInformation"]["instituteWebmailAddress"]
 		
+		mails = {
+			'PersonalEmail': PersonalEmail,
+			'InstituteEmail': InstituteEmail
+		}
+
+		user = User.objects.filter( Q(email=InstituteEmail) or Q(email=PersonalEmail))[0]
+		if user is not None:
+			login(request, user);
+			user_data = {
+				'username': user.username,
+				'first_name': user.first_name,
+				'last_name': user.last_name,
+				'email': user.email,
+				'group' : user.groups.all()[0].name
+			}	
+			print(user_data);
+			return redirect('http://localhost:5173/homepage/assignments/')
+		return redirect("http://localhost:5173/")
 
 
 class OAuthLogout(View):
@@ -91,7 +104,7 @@ class LoginView(View):
 			}
 			return JsonResponse(user_data)
 		else:
-			return JsonResponse({'message': 'Login Failed'}, status=401)
+			return JsonResponse({'error': 'Credentials Do Not Match'}, status=401)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SignUpView(View):
@@ -103,10 +116,13 @@ class SignUpView(View):
 		last_name = request.POST.get('last_name')
 
 		if not username or not password or not email or not first_name or not last_name:
-			return JsonResponse({'error': 'All fields are required'}, status=400)
+			return JsonResponse({'error': 'All fields are required'} )
 
 		if User.objects.filter(username=username).exists():
-			return JsonResponse({'error': 'User already exists'}, status=400)
+			return JsonResponse({'error': 'User already exists'})
+		
+		if User.objects.filter(email=email).exists():
+			return JsonResponse({'error': 'An account with this email already exists'})
 
 		group_name = 'Reviewee'
 		group, created = Group.objects.get_or_create(name=group_name)
@@ -116,7 +132,16 @@ class SignUpView(View):
 		user_data = User.objects.filter(username=username).values()[0]
 		return JsonResponse(user_data)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LogoutView(View):
 	def post(self, request):
 		logout(request)
 		return JsonResponse({'message': 'Logged out successfully'})
+	
+@method_decorator(csrf_exempt, name='dispatch')
+class IsAuthenticated(View):
+	def get(self, request):
+		if request.user.is_authenticated:
+			return JsonResponse({'is_authenticated': 'True'})
+		else:
+			return JsonResponse({'is_authenticated': 'False'}, status=401)

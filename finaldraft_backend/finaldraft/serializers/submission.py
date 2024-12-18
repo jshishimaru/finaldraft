@@ -9,6 +9,7 @@ class SubmissionCreateSerializer(serializers.ModelSerializer):
 			'assignment',
 			'remark',
 			'is_completed',
+			'repo_link',
 		]
 
 class SubtaskSubmissionInfoSerializer(serializers.ModelSerializer):
@@ -24,7 +25,11 @@ class SubmissionSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 class SubmissionListSerializer(serializers.ModelSerializer):
-	
-	class Meta:
-		model = Submission
-		fields = ['id','reviewee','date',]
+    approved_by_username = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Submission
+        fields = ['id', 'reviewee', 'date', 'approved_by_username']
+
+    def get_approved_by_username(self, obj):
+        return obj.approved_by.username if obj.approved_by else None

@@ -11,6 +11,9 @@ const theme = createTheme({
 		background: {
 			default: '#222831'
 		},
+		error:{
+			main: "#FF5555"
+		},
 	},
 	typography:{
 		fontFamily:[

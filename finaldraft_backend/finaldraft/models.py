@@ -23,7 +23,7 @@ class Subtask( models.Model):
 	assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE , blank=True)
 
 	def __str__(self):
-		return self.title
+		return str(self.pk) + " - " + self.title
 
 class Submission( models.Model):
 	date = models.DateTimeField( default=datetime.datetime.now)	
@@ -64,3 +64,11 @@ class GroupInfo(models.Model):
 	def __str__(self):
 		return str(self.pk) + " - " + self.name
 
+class Comment(models.Model):
+	content = models.CharField(max_length=200)
+	submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+	def __str__(self):
+		return str(self.pk) + " - " + self.submission.assignment.title + " " + self.author.username
+	

@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from finaldraft.models import Submission, Attachment , Assignment
 from finaldraft.serializers.attachment import AttachmentSerializer
+from django.views.decorators.csrf import csrf_protect 
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -28,6 +29,7 @@ class SubmissionAttachmentList(View):
 		data = request.POST
 		image = request.FILES.get('image')
 		file = request.FILES.get('file')
+		print(data.get('submission_id'))
 		submission = get_object_or_404(Submission, pk=data.get('submission_id'))
 		attachment_data = {
 			'image': image,
@@ -50,7 +52,8 @@ class AssignmentAttachmentList(View):
 		for attachment in attachments:
 			attachment_info = {
 			    'id': attachment.id,
-			    'name': os.path.basename(attachment.image.name) if attachment.image else os.path.basename(attachment.file.name) if attachment.file else None
+			    'name': os.path.basename(attachment.image.name) if attachment.image else os.path.basename(attachment.file.name) if attachment.file else None,
+				'url': request.build_absolute_uri(attachment.image.url) if attachment.image else request.build_absolute_uri(attachment.file.url) if attachment.file else None
 			}
 			attachment_list.append(attachment_info)
 		return JsonResponse(attachment_list, safe=False)

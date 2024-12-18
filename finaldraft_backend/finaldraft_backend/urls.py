@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
-from finaldraft_backend.auth import OAuthAuthorize, OAuthGetToken , OAuthLogout , LoginView , SignUpView , LogoutView
+from finaldraft_backend.auth import OAuthAuthorize, OAuthGetToken , OAuthLogout , LoginView , SignUpView , LogoutView , IsAuthenticated
 
 
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
 	path('oauth/authorise/', OAuthAuthorize.as_view() , name='authorise'),
 	path('oauth/channeli/callback/', OAuthGetToken.as_view() , name='get_token'),
 	path('oauth/channeli/logout/' , OAuthLogout.as_view() , name='logout'),
+    path('auth/isauthenticated/', IsAuthenticated.as_view() , name='isauthenticated'),
 	path('finaldraft/', include('finaldraft.urls')),
 ]
 

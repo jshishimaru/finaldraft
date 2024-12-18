@@ -7,6 +7,7 @@ class AttachmentURLSerializer(serializers.ModelSerializer):
 		fields = ['id','url']
 
 class AttachmentSerializer(serializers.ModelSerializer):
+
 	class Meta:
 		model = Attachment
 		fields = ['id', 'image', 'file', 'assignment', 'submission']

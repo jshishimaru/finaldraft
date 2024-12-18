@@ -68,6 +68,7 @@ const CreateAssignment: React.FC = () => {
   const [subtaskTitle, setSubtaskTitle] = useState<string>('');
   const [subtaskDeadline, setSubtaskDeadline] = useState<Dayjs | null>(null);
   const [attachments, setAttachments ] = useState<Attachment[]>([]);
+  const [sendToMail, setSendToMail] = useState<boolean>(false);
   const fileInputRef = React.createRef<HTMLInputElement>();
 
   const assignmentId = 0;
@@ -156,7 +157,8 @@ const CreateAssignment: React.FC = () => {
 		deadline?.format('YYYY-MM-DD') || '', 
 		selectedReviewees, 
 		selectedGroups, 
-		selectedReviewers
+		selectedReviewers,
+		sendToMail,
 		);
 	    const assignmentId = response.assignment_id;
 	  
@@ -531,6 +533,18 @@ const CreateAssignment: React.FC = () => {
         ))}
       </FormGroup>
 	</Box>
+	
+	<FormControlLabel
+	  control={
+	    <Checkbox
+	      checked={sendToMail}
+	      onChange={(e) => setSendToMail(e.target.checked)}
+	      sx={{ color: '#6FB7EE' }}
+	    />
+	  }
+	  label="Send to Mail"
+	  sx={{ color: '#EEEEEE' }}
+	/>
 
       <Button type="submit" variant="contained" color="primary">
         Create Assignment

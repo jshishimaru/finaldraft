@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { getSubmissions, getUsernames, getAssignmentDetails } from '../apiservice';
 import dayjs from 'dayjs';
 import { Box, Typography, Card, CardContent } from '@mui/material';
@@ -9,6 +9,7 @@ interface SubmissionCard{
 	reviewee: number[];
 	date: string;
 	id: string;
+	approved_by_username:string|null;
 
 }
 
@@ -16,8 +17,10 @@ export default function Submissions(){
 
 	const [submissions, setSubmissions] = useState<SubmissionCard[]>([]);
 	const [deadline, setDeadline] = useState<string>('');
-	const { assignment_id } = useParams<{ assignment_id: string }>();
+	const {assignment_id} = useParams<{ assignment_id: string }>();
     const [usernames, setUsernames] = useState<{ [key: number]: string }>({});
+
+	const navigate = useNavigate();
   
   useEffect(() => {
     const fetchData = async () => {
@@ -67,9 +70,15 @@ export default function Submissions(){
       <Typography variant="h4" component="h1" gutterBottom sx={{fontWeight:"bold" , color:"primary.main"}}>
         Submissions
       </Typography>
-	  <Box sx={{display:"flex" , width:"1000px" , justifyContent:"center" , flexWrap:'wrap' , gap:"20px" , pt:5 }}>
+	  <Box 
+	  sx={{display:"flex" , width:"1000px" , justifyContent:"center" , flexWrap:'wrap' , gap:"20px" , pt:5 }}>
       {submissions.map((submission) => (
-        <Card key={submission.id} sx={{ mb: 2, bgcolor: '#31363F', color: '#EEEEEE' , width:"400px" , borderRadius:6, pt:1, }}>
+        <Card key={submission.id} 
+		sx={{ mb: 2, bgcolor: '#31363F', color: '#EEEEEE' , width:"400px" , borderRadius:6, pt:1, }}
+		onClick={() => {
+			navigate(`/homepage/assignments/submissions/${assignment_id}/review/${submission.id}`);
+		}}
+		>
           <CardContent>
             <Typography variant="h6" component="h2">
               {formatReviewees(submission.reviewee)}
@@ -77,6 +86,20 @@ export default function Submissions(){
             <Typography variant="body2" component="p" sx={{color:"primary.main" , pt:1,}}>
               Status: {calculateLateStatus(submission.date)}
             </Typography>
+            { submission.approved_by_username ? (
+				<Box sx={{display:"flex" , justifyContent:"space-between"}}>
+				<Typography variant="body2" component="p" sx={{color:"primary.main" , pt:1,}}>
+              Approved By : {submission.approved_by_username}
+            </Typography>
+				<Box sx={{ width: 10, height: 10, bgcolor: 'green', borderRadius: '50%', m: 1 }} />
+			</Box>
+			) : (
+				<Box sx={{display:"flex" , justifyContent:"space-between"}}>
+				<Typography variant="body2" component="p" sx={{color:"primary.main" , pt:1,}}>
+              Approval Pending
+            </Typography>
+				<Box sx={{ width: 10, height: 10, bgcolor: 'yellow', borderRadius: '50%', m: 1 }} />
+			</Box>			)}
           </CardContent>
         </Card>
       ))}

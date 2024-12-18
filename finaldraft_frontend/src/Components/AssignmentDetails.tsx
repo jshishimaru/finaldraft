@@ -10,9 +10,10 @@ import {
   AccordionSummary,
   AccordionDetails,
   Button,
+  IconButton,
 } from '@mui/material';
-import { ExpandMore, AttachFile } from '@mui/icons-material';
-import { getAssignmentDetails } from '../apiservice';
+import { ExpandMore, AttachFile, Download } from '@mui/icons-material';
+import { getAssignmentDetails , getAttachmentURL } from '../apiservice';
 import { useParams } from 'react-router-dom';
 import { getAttachments , getSubtasks } from '../apiservice';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 interface Attachment {
   name: string;
   url: string;
+  id: number;
 }
 
 interface Subtask {
@@ -72,6 +74,14 @@ const AssignmentDetails: React.FC = () => {
    	 fetchAssignmentDetails();
   	}, [assignment_id]);
 
+	const handleDownloadClick = async ( attachmentId : number) =>{
+
+	const url = await getAttachmentURL(attachmentId);
+	console.log(url);
+	window.open(url);
+
+	}
+
 
   if (!assignment) {
     return <Typography>Loading...</Typography>;
@@ -101,18 +111,30 @@ const AssignmentDetails: React.FC = () => {
 	</Typography>
 
 
-      <Accordion sx={{bgcolor:"#31363F" , color:"#EEEEEE" , width:"400px" , borderRadius:"30px" , p:2,}}>
-        <AccordionSummary expandIcon={<ExpandMore sx={{color:"#EEEEEE"}}/>}>
+      <Accordion sx={{ bgcolor: '#31363F', color: '#EEEEEE', width: '400px', borderRadius:"30px" , p: 2, 
+          '&:first-of-type': {
+            borderTopLeftRadius: '30px',
+            borderTopRightRadius: '30px',
+          },
+          '&:last-of-type': {
+            borderBottomLeftRadius: '30px',
+            borderBottomRightRadius: '30px',
+          },
+	  }}>
+        <AccordionSummary expandIcon={<ExpandMore sx={{ color: '#EEEEEE' }} />}>
           <Typography>Attachments</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <List>
             {attachments.map((attachment, index) => (
-              <ListItem key={index}>
+              <ListItem key={index} sx={{ display: 'flex', alignItems: 'center' }}>
                 <ListItemIcon>
-                  <AttachFile />
+                  <AttachFile sx={{ color: '#EEEEEE' }} />
                 </ListItemIcon>
-                <ListItemText primary={attachment.name} />
+                <ListItemText primary={attachment.name} sx={{ color: '#EEEEEE', flexGrow: 1 }} />
+                <IconButton onClick={() => handleDownloadClick(attachment.id)} sx={{ color: '#6FB7EE' }}>
+                  <Download />
+                </IconButton>
               </ListItem>
             ))}
           </List>

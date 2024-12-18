@@ -41,18 +41,10 @@ export default function SubmitAssignment(){
 
 	const SubmissionId = 0;
 
-	const handleRepoLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setRepoLink(event.target.value);
-	}
-
 	const isImageFile = (file: File): boolean => {
 		const imageTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif' , 'image/svg','image/BMP'];
 		return imageTypes.includes(file.type);
 	};
-
-	const handleRemarksChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setRemark(event.target.value);
-	}
 
 	const handleRevieweeChange = (id: number) => {
 	setSelectedReviewees((prev) =>
@@ -138,7 +130,7 @@ export default function SubmitAssignment(){
 
 		const submissionId = response.submission_id;
 		console.log(submissionId);
-		
+
 		for ( const attachment of attachments) {
 	      await addSubmissionAttachment(
 	        submissionId,
@@ -146,6 +138,8 @@ export default function SubmitAssignment(){
 	        attachment.type === 'document' ? attachment.file : null
 	      );
 		}
+		
+		alert('Assignment submitted successfully');
 		
 	}
 
@@ -170,7 +164,7 @@ export default function SubmitAssignment(){
         label="Repository Link"
         variant="outlined"
         value={repoLink}
-        onChange={handleRepoLinkChange}
+        onChange={(e)=>setRepoLink(e.target.value)}
         error={repoLinkError}
         helperText={repoLinkError ? 'Please enter a valid URL' : ''}
         required
